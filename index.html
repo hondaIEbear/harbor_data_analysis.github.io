@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>資料分析儀表板</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     table th, table td {
       width: 200px;
@@ -15,119 +16,140 @@
 </head>
 <body class="bg-gray-100 min-h-screen p-6">
   <header class="mb-6">
-    <h1 class="text-3xl font-bold text-gray-800">Dashboard</h1>
+    <h1 class="text-3xl font-bold text-gray-800">儀錶板</h1>
     <p class="text-gray-600">爬蟲即時資料與分析結果</p>
   </header>
 
-  <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+  <!-- 指標區塊 -->
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
     <div class="bg-white p-4 rounded-xl shadow">
-      <h2 class="text-xl font-semibold text-gray-700">指標一：平均價格</h2>
+      <h2 class="text-lg font-semibold text-gray-700">指標一：平均價格</h2>
       <p id="metric1" class="text-2xl text-blue-600">--</p>
     </div>
-
     <div class="bg-white p-4 rounded-xl shadow">
-      <h2 class="text-xl font-semibold text-gray-700">指標二：成長率</h2>
+      <h2 class="text-lg font-semibold text-gray-700">指標二：成長率</h2>
       <p id="metric2" class="text-2xl text-green-600">--</p>
     </div>
-
     <div class="bg-white p-4 rounded-xl shadow">
-      <h2 class="text-xl font-semibold text-gray-700">指標三：最新時間</h2>
+      <h2 class="text-lg font-semibold text-gray-700">指標三：最新時間</h2>
       <p id="metric3" class="text-2xl text-gray-800">--</p>
+    </div>
+  </section>
+
+  <!-- 主體：左表格右圖表 -->
+  <main class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- 表格區塊 -->
+    <div class="space-y-8">
+      <div class="bg-white p-6 rounded-xl shadow">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">貨物資料</h2>
+        <table class="min-w-full bg-white rounded-xl overflow-hidden shadow table-fixed">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="text-left px-6 py-3">名稱</th>
+              <th class="text-center px-6 py-3">數值（單位）</th>
+            </tr>
+          </thead>
+          <tbody id="data-table-chart"></tbody>
+        </table>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl shadow">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">吞吐資料</h2>
+        <table class="min-w-full bg-white rounded-xl overflow-hidden shadow table-fixed">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="text-left px-6 py-3">名稱</th>
+              <th class="text-center px-6 py-3">數值（單位）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="px-6 py-2 text-left">吞吐量 A</td><td class="px-6 py-2 text-center">3421 公噸</td></tr>
+            <tr><td class="px-6 py-2 text-left">吞吐量 B</td><td class="px-6 py-2 text-center">2890 公噸</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl shadow">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">航港資料</h2>
+        <table class="min-w-full bg-white rounded-xl overflow-hidden shadow table-fixed">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="text-left px-6 py-3">名稱</th>
+              <th class="text-center px-6 py-3">數值（單位）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="px-6 py-2 text-left">高雄港</td><td class="px-6 py-2 text-center">23.5 艘/日</td></tr>
+            <tr><td class="px-6 py-2 text-left">台中港</td><td class="px-6 py-2 text-center">17.2 艘/日</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 圓餅圖區塊 -->
+    <div class="bg-white p-6 rounded-xl shadow h-fit">
+      <h2 class="text-2xl font-semibold text-gray-700 mb-4">圓餅圖</h2>
+      <canvas id="pieChart"></canvas>
     </div>
   </main>
 
-  <section class="mt-8">
-    <h2 class="text-2xl font-bold text-gray-700 mb-4">貨物資料</h2>
-    <div class="overflow-x-auto">
-      <table class="min-w-full bg-white rounded-xl overflow-hidden shadow table-fixed">
-        <thead class="bg-gray-200">
-          <tr>
-            <th class="text-left px-6 py-3">名稱</th>
-            <th class="text-center px-6 py-3">數值</th>
-            <th class="text-right px-6 py-3">單位</th>
-          </tr>
-        </thead>
-        <tbody id="data-table-goods"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="mt-8">
-    <h2 class="text-2xl font-bold text-gray-700 mb-4">吞吐資料</h2>
-    <div class="overflow-x-auto">
-      <table class="min-w-full bg-white rounded-xl overflow-hidden shadow table-fixed">
-        <thead class="bg-gray-200">
-          <tr>
-            <th class="text-left px-6 py-3">名稱</th>
-            <th class="text-center px-6 py-3">數值</th>
-            <th class="text-right px-6 py-3">單位</th>
-          </tr>
-        </thead>
-        <tbody id="data-table-throughput"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="mt-8">
-    <h2 class="text-2xl font-bold text-gray-700 mb-4">航港資料</h2>
-    <div class="overflow-x-auto">
-      <table class="min-w-full bg-white rounded-xl overflow-hidden shadow table-fixed">
-        <thead class="bg-gray-200">
-          <tr>
-            <th class="text-left px-6 py-3">名稱</th>
-            <th class="text-center px-6 py-3">數值</th>
-            <th class="text-right px-6 py-3">單位</th>
-          </tr>
-        </thead>
-        <tbody id="data-table-port"></tbody>
-      </table>
-    </div>
-  </section>
-
   <script>
-    const mockData = {
+    const sampleData = [
+      { name: "價格 A", value: 88.1, unit: "元" },
+      { name: "價格 B", value: 71.4, unit: "元" }, 
+      { name: "價格 C", value: 95.3, unit: "元" },
+      { name: "價格 D", value: 126.7, unit: "元" }
+    ];
+
+    const metricData = {
       metric1: 123.45,
       metric2: "+4.7%",
-      metric3: new Date().toLocaleString(),
-      goods: [
-        { name: "價格 A", value: 88.1, unit: "元" },
-        { name: "價格 B", value: 101.4, unit: "元" }
-      ],
-      throughput: [
-        { name: "吞吐量 A", value: 3421, unit: "公噸" },
-        { name: "吞吐量 B", value: 2890, unit: "公噸" }
-      ],
-      port: [
-        { name: "高雄港", value: 23.5, unit: "艘/日" },
-        { name: "台中港", value: 17.2, unit: "艘/日" }
-      ]
+      metric3: new Date().toLocaleString()
     };
 
-    function updateTable(tableId, data) {
-      const tbody = document.getElementById(tableId);
+    function renderTable(data) {
+      const tbody = document.getElementById("data-table-chart");
       tbody.innerHTML = "";
       data.forEach(row => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td class="px-6 py-2 text-left">${row.name}</td>
-          <td class="px-6 py-2 text-center">${row.value}</td>
-          <td class="px-6 py-2 text-right">${row.unit}</td>
+          <td class="px-6 py-2 text-center">${row.value} ${row.unit}</td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    function updateDashboard(data) {
+    function renderPieChart(data) {
+      const ctx = document.getElementById('pieChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: data.map(item => item.name),
+          datasets: [{
+            data: data.map(item => item.value),
+            backgroundColor: ['#60A5FA', '#34D399', '#FBBF24', '#F87171'],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'right' }
+          }
+        }
+      });
+    }
+
+    function updateMetrics(data) {
       document.getElementById("metric1").textContent = data.metric1;
       document.getElementById("metric2").textContent = data.metric2;
       document.getElementById("metric3").textContent = data.metric3;
-
-      updateTable("data-table-goods", data.goods);
-      updateTable("data-table-throughput", data.throughput);
-      updateTable("data-table-port", data.port);
     }
 
-    updateDashboard(mockData);
+    renderTable(sampleData);
+    renderPieChart(sampleData);
+    updateMetrics(metricData);
   </script>
 </body>
 </html>
