@@ -2,74 +2,132 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>IELTS Learning</title>
-  <link rel="icon" href="favicon.png" type="image/png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>資料分析儀表板</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #eef7fa;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-
-    #container {
-      width: 800px;
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 0 25px rgba(0,0,0,0.2);
-      padding: 3em;
-      box-sizing: border-box;
-      text-align: center;
-    }
-
-    h1 {
-      font-size: 40px;
-      margin-bottom: 2em;
-      color: #0b7bb5;
-    }
-
-    .nav-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2em;
-      justify-items: center;
-    }
-
-    .nav-button {
-      width: 200px;               /* 更短 */
-      height: 80px;               /* 更高 */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      text-decoration: none;
-      background-color: #0077cc;
-      color: white;
-      border-radius: 12px;
-      text-align: center;
-      transition: background-color 0.3s ease;
-    }
-
-    .nav-button:hover {
-      background-color: #005fa3;
+    table th, table td {
+      width: 200px;
+      min-width: 200px;
+      max-width: 200px;
     }
   </style>
 </head>
-<body>
-  <div id="container">
-    <h1>IELTS Learning Web</h1>
-    <a href="https://ieltsliz.com/"><h2>Extra Resources: IELTS Liz</h2></a><br><br>
+<body class="bg-gray-100 min-h-screen p-6">
+  <header class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-800">Dashboard</h1>
+    <p class="text-gray-600">爬蟲即時資料與分析結果</p>
+  </header>
 
-    <div class="nav-grid">
-      <a class="nav-button" href="https://www.voicetube.com/">Listening</a>
-      <a class="nav-button" href="index_reading.html">Reading</a>
-      <a class="nav-button" href="https://ieltsonlinetests.com/zh-hans/writing-tips/18961986.html">Writing</a>
-      <a class="nav-button" href="https://ieltsonlinetests.com/zh-hans/speaking-tips/18924067.html">Speaking</a>
+  <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+    <div class="bg-white p-4 rounded-xl shadow">
+      <h2 class="text-xl font-semibold text-gray-700">指標一：平均價格</h2>
+      <p id="metric1" class="text-2xl text-blue-600">--</p>
     </div>
-  </div>
+
+    <div class="bg-white p-4 rounded-xl shadow">
+      <h2 class="text-xl font-semibold text-gray-700">指標二：成長率</h2>
+      <p id="metric2" class="text-2xl text-green-600">--</p>
+    </div>
+
+    <div class="bg-white p-4 rounded-xl shadow">
+      <h2 class="text-xl font-semibold text-gray-700">指標三：最新時間</h2>
+      <p id="metric3" class="text-2xl text-gray-800">--</p>
+    </div>
+  </main>
+
+  <section class="mt-8">
+    <h2 class="text-2xl font-bold text-gray-700 mb-4">貨物資料</h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white rounded-xl overflow-hidden shadow table-fixed">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="text-left px-6 py-3">名稱</th>
+            <th class="text-center px-6 py-3">數值</th>
+            <th class="text-right px-6 py-3">單位</th>
+          </tr>
+        </thead>
+        <tbody id="data-table-goods"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="mt-8">
+    <h2 class="text-2xl font-bold text-gray-700 mb-4">吞吐資料</h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white rounded-xl overflow-hidden shadow table-fixed">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="text-left px-6 py-3">名稱</th>
+            <th class="text-center px-6 py-3">數值</th>
+            <th class="text-right px-6 py-3">單位</th>
+          </tr>
+        </thead>
+        <tbody id="data-table-throughput"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="mt-8">
+    <h2 class="text-2xl font-bold text-gray-700 mb-4">航港資料</h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white rounded-xl overflow-hidden shadow table-fixed">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="text-left px-6 py-3">名稱</th>
+            <th class="text-center px-6 py-3">數值</th>
+            <th class="text-right px-6 py-3">單位</th>
+          </tr>
+        </thead>
+        <tbody id="data-table-port"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const mockData = {
+      metric1: 123.45,
+      metric2: "+4.7%",
+      metric3: new Date().toLocaleString(),
+      goods: [
+        { name: "價格 A", value: 88.1, unit: "元" },
+        { name: "價格 B", value: 101.4, unit: "元" }
+      ],
+      throughput: [
+        { name: "吞吐量 A", value: 3421, unit: "公噸" },
+        { name: "吞吐量 B", value: 2890, unit: "公噸" }
+      ],
+      port: [
+        { name: "高雄港", value: 23.5, unit: "艘/日" },
+        { name: "台中港", value: 17.2, unit: "艘/日" }
+      ]
+    };
+
+    function updateTable(tableId, data) {
+      const tbody = document.getElementById(tableId);
+      tbody.innerHTML = "";
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="px-6 py-2 text-left">${row.name}</td>
+          <td class="px-6 py-2 text-center">${row.value}</td>
+          <td class="px-6 py-2 text-right">${row.unit}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateDashboard(data) {
+      document.getElementById("metric1").textContent = data.metric1;
+      document.getElementById("metric2").textContent = data.metric2;
+      document.getElementById("metric3").textContent = data.metric3;
+
+      updateTable("data-table-goods", data.goods);
+      updateTable("data-table-throughput", data.throughput);
+      updateTable("data-table-port", data.port);
+    }
+
+    updateDashboard(mockData);
+  </script>
 </body>
 </html>
