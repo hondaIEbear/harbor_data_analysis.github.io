@@ -41,7 +41,7 @@
     <!-- 表格區塊 -->
     <div class="space-y-8">
       <div class="bg-white p-6 rounded-xl shadow">
-        <h2 class="text-2xl font-semibold text-gray-700 mb-4">貨物資料</h2>
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">貨物市值</h2>
         <table class="min-w-full bg-white rounded-xl overflow-hidden shadow table-fixed">
           <thead class="bg-gray-200">
             <tr>
@@ -49,12 +49,15 @@
               <th class="text-center px-6 py-3">數值（單位）</th>
             </tr>
           </thead>
-          <tbody id="data-table-chart"></tbody>
+          <tbody>
+            <tr><td class="px-6 py-2 text-left">市值 A</td><td class="px-6 py-2 text-center">2.5 億元</td></tr>
+            <tr><td class="px-6 py-2 text-left">市值 B</td><td class="px-6 py-2 text-center">1.2 億元</td></tr>
+          </tbody>
         </table>
       </div>
 
       <div class="bg-white p-6 rounded-xl shadow">
-        <h2 class="text-2xl font-semibold text-gray-700 mb-4">吞吐資料</h2>
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">吞吐量</h2>
         <table class="min-w-full bg-white rounded-xl overflow-hidden shadow table-fixed">
           <thead class="bg-gray-200">
             <tr>
@@ -78,9 +81,7 @@
               <th class="text-center px-6 py-3">數值（單位）</th>
             </tr>
           </thead>
-          <tbody>
-            <tr><td class="px-6 py-2 text-left">高雄港</td><td class="px-6 py-2 text-center">23.5 艘/日</td></tr>
-            <tr><td class="px-6 py-2 text-left">台中港</td><td class="px-6 py-2 text-center">17.2 艘/日</td></tr>
+          <tbody id="data-table-chart">
           </tbody>
         </table>
       </div>
@@ -88,17 +89,17 @@
 
     <!-- 圓餅圖區塊 -->
     <div class="bg-white p-6 rounded-xl shadow h-fit">
-      <h2 class="text-2xl font-semibold text-gray-700 mb-4">圓餅圖</h2>
+      <h2 class="text-2xl font-semibold text-gray-700 mb-4">航港船舶占比</h2>
       <canvas id="pieChart"></canvas>
     </div>
   </main>
 
   <script>
     const sampleData = [
-      { name: "價格 A", value: 88.1, unit: "元" },
-      { name: "價格 B", value: 71.4, unit: "元" }, 
-      { name: "價格 C", value: 95.3, unit: "元" },
-      { name: "價格 D", value: 126.7, unit: "元" }
+      { name: "高雄港", value: 32.5, unit: "艘/日" },
+      { name: "台中港", value: 17.2, unit: "艘/日" }, 
+      { name: "基隆港", value: 23.7, unit: "艘/日" },
+      { name: "花蓮港", value: 11.6, unit: "艘/日" }
     ];
 
     const metricData = {
