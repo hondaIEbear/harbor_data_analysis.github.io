@@ -1,157 +1,219 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <link rel="icon" type="image/png" href="favicon.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>資料分析儀表板</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>信用分數預測監控台</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    table th, table td {
-      width: 200px;
-      min-width: 200px;
-      max-width: 200px;
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom right, #f5f6fa, #dcdde1);
+    }
+    .header {
+      background-color: #2f3640;
+      color: white;
+      padding: 1.5rem 2rem;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .container {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      transition: all 0.3s ease-in-out;
+    }
+    .card:hover {
+      transform: translateY(-6px) scale(1.01);
+    }
+    .card.left {
+      flex: 1 1 35%;
+    }
+    .card.right {
+      flex: 2 1 60%;
+    }
+    .card h2 {
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+      color: #2f3640;
+    }
+    input, select, button {
+      padding: 0.6rem;
+      margin: 0.4rem 0;
+      width: 100%;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      transition: box-shadow 0.2s, background-color 0.2s;
+    }
+    input:focus, select:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px #2980b9aa;
+    }
+    button {
+      background-color: #2f3640;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #27ae60;
+    }
+    .result {
+      margin-top: 1.2rem;
+      font-weight: bold;
+      font-size: 1.8rem;
+      transition: color 0.3s;
+    }
+    .poor {
+      color: red;
+    }
+    .record {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      color: #666;
+    }
+    .history {
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      color: #444;
+    }
+    .history li {
+      margin-bottom: 0.3rem;
     }
   </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-6">
-  <header class="mb-6">
-    <h1 class="text-3xl font-bold text-gray-800">儀錶板</h1>
-    <p class="text-gray-600">爬蟲即時資料與分析結果</p>
-  </header>
+<body>
+  <div class="header">
+    <h1>信用分數預測模型監控台</h1>
+    <h2>第 i 組 Demo</h2>
+  </div>
 
-  <!-- 指標區塊 -->
-  <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-    <div class="bg-white p-4 rounded-xl shadow">
-      <h2 class="text-lg font-semibold text-gray-700">指標一：平均價格</h2>
-      <p id="metric1" class="text-2xl text-blue-600">--</p>
-    </div>
-    <div class="bg-white p-4 rounded-xl shadow">
-      <h2 class="text-lg font-semibold text-gray-700">指標二：成長率</h2>
-      <p id="metric2" class="text-2xl text-green-600">--</p>
-    </div>
-    <div class="bg-white p-4 rounded-xl shadow">
-      <h2 class="text-lg font-semibold text-gray-700">指標三：最新時間</h2>
-      <p id="metric3" class="text-2xl text-gray-800">--</p>
-    </div>
-  </section>
+  <div class="container">
+    <div class="row">
+      <div class="card left">
+        <h2>輸入資料預測</h2><br>
+        <label for="income"><h3>Annual Income</h3></label>
+        <input type="number" id="income" placeholder="輸入年收入，例如：42000" />
 
-  <!-- 主體：左表格右圖表 -->
-  <main class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <!-- 表格區塊 -->
-    <div class="space-y-8">
-      <div class="bg-white p-6 rounded-xl shadow">
-        <h2 class="text-2xl font-semibold text-gray-700 mb-4">貨物市值</h2>
-        <table class="min-w-full bg-white rounded-xl overflow-hidden shadow table-fixed">
-          <thead class="bg-gray-200">
-            <tr>
-              <th class="text-left px-6 py-3">名稱</th>
-              <th class="text-center px-6 py-3">數值（單位）</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td class="px-6 py-2 text-left">市值 A</td><td class="px-6 py-2 text-center">2.5 億元</td></tr>
-            <tr><td class="px-6 py-2 text-left">市值 B</td><td class="px-6 py-2 text-center">1.2 億元</td></tr>
-          </tbody>
-        </table>
+        <label for="debt"><h3>Outstanding Debt</h3></label>
+        <input type="number" id="debt" placeholder="輸入未償債務，例如：15000" />
+
+        <label for="age"><h3>Age</h3></label>
+        <input type="number" id="age" placeholder="年齡，例如：35" />
+
+        <button onclick="predictScore()">預測信用分數</button>
+
+        <div class="result" id="predictionResult"></div>
+        <div class="record" id="lastInput"></div>
+        <div class="history">
+          <h3>預測紀錄</h3>
+          <ul id="predictionLog"></ul>
+        </div>
       </div>
 
-      <div class="bg-white p-6 rounded-xl shadow">
-        <h2 class="text-2xl font-semibold text-gray-700 mb-4">吞吐量</h2>
-        <table class="min-w-full bg-white rounded-xl overflow-hidden shadow table-fixed">
-          <thead class="bg-gray-200">
-            <tr>
-              <th class="text-left px-6 py-3">名稱</th>
-              <th class="text-center px-6 py-3">數值（單位）</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td class="px-6 py-2 text-left">吞吐量 A</td><td class="px-6 py-2 text-center">3421 公噸</td></tr>
-            <tr><td class="px-6 py-2 text-left">吞吐量 B</td><td class="px-6 py-2 text-center">2890 公噸</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="bg-white p-6 rounded-xl shadow">
-        <h2 class="text-2xl font-semibold text-gray-700 mb-4">航港資料</h2>
-        <table class="min-w-full bg-white rounded-xl overflow-hidden shadow table-fixed">
-          <thead class="bg-gray-200">
-            <tr>
-              <th class="text-left px-6 py-3">名稱</th>
-              <th class="text-center px-6 py-3">數值（單位）</th>
-            </tr>
-          </thead>
-          <tbody id="data-table-chart">
-          </tbody>
-        </table>
+      <div class="card right">
+        <h2>特徵重要性（Top 15）</h2>
+        <canvas id="featureImportance"></canvas>
       </div>
     </div>
+  </div>
 
-    <!-- 圓餅圖區塊 -->
-    <div class="bg-white p-6 rounded-xl shadow h-fit">
-      <h2 class="text-2xl font-semibold text-gray-700 mb-4">航港船舶占比</h2>
-      <canvas id="pieChart"></canvas>
-    </div>
-  </main>
+<script>
+  const historyLog = [];
 
-  <script>
-    const sampleData = [
-      { name: "高雄港", value: 32.5, unit: "艘/日" },
-      { name: "台中港", value: 17.2, unit: "艘/日" }, 
-      { name: "基隆港", value: 23.7, unit: "艘/日" },
-      { name: "花蓮港", value: 11.6, unit: "艘/日" }
-    ];
+  function predictScore() {
+    const income = parseFloat(document.getElementById('income').value);
+    const debt = parseFloat(document.getElementById('debt').value);
+    const age = parseFloat(document.getElementById('age').value);
 
-    const metricData = {
-      metric1: 123.45,
-      metric2: "+4.7%",
-      metric3: new Date().toLocaleString()
-    };
+    const resultEl = document.getElementById("predictionResult");
+    const recordEl = document.getElementById("lastInput");
+    const logEl = document.getElementById("predictionLog");
 
-    function renderTable(data) {
-      const tbody = document.getElementById("data-table-chart");
-      tbody.innerHTML = "";
-      data.forEach(row => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td class="px-6 py-2 text-left">${row.name}</td>
-          <td class="px-6 py-2 text-center">${row.value} ${row.unit}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+    if (isNaN(income) || isNaN(debt) || isNaN(age)) {
+      resultEl.textContent = "請填寫所有欄位。";
+      resultEl.className = "result";
+      return;
     }
 
-    function renderPieChart(data) {
-      const ctx = document.getElementById('pieChart').getContext('2d');
-      new Chart(ctx, {
-        type: 'pie',
-        data: {
-          labels: data.map(item => item.name),
-          datasets: [{
-            data: data.map(item => item.value),
-            backgroundColor: ['#60A5FA', '#34D399', '#FBBF24', '#F87171'],
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { position: 'right' }
-          }
-        }
-      });
+    if (income < 0 || debt < 0) {
+      resultEl.textContent = "收入與債務不得為負數。";
+      resultEl.className = "result";
+      return;
     }
 
-    function updateMetrics(data) {
-      document.getElementById("metric1").textContent = data.metric1;
-      document.getElementById("metric2").textContent = data.metric2;
-      document.getElementById("metric3").textContent = data.metric3;
+    if (age < 0 || age > 150) {
+      resultEl.textContent = "年齡必須介於 0 到 150 歲之間。";
+      resultEl.className = "result";
+      return;
     }
 
-    renderTable(sampleData);
-    renderPieChart(sampleData);
-    updateMetrics(metricData);
-  </script>
+    let score = "Standard";
+    if (debt < 10000 && income > 50000 && age > 30) {
+      score = "Good";
+    } else if (debt > 20000 || income < 25000) {
+      score = "Poor";
+    }
+
+    resultEl.textContent = `預測結果：${score}`;
+    resultEl.className = score === "Poor" ? "result poor" : "result";
+
+    const inputStr = `年收入: ${income}, 債務: ${debt}, 年齡: ${age}`;
+    recordEl.textContent = `上一筆輸入 ➤ ${inputStr}`;
+
+    const newItem = document.createElement("li");
+    newItem.textContent = `${inputStr} → ${score}`;
+    logEl.prepend(newItem);
+  }
+
+  const featureLabels = [
+    "Outstanding_Debt", "Annual_Income", "Salary_Ratio",
+    "Total_EMI_per_month", "Interest_Rate", "Changed_Credit_Limit",
+    "Age", "Credit_History_Age_years", "Num_Credit_Card",
+    "Delay_from_due_date", "Num_of_Delayed_Payment", "Num_Bank_Accounts",
+    "Num_Credit_Inquiries", "Amount_invested_monthly", "Monthly_Balance"
+  ];
+  const featureScores = [790, 680, 610, 520, 500, 460, 410, 390, 360, 330, 310, 290, 270, 250, 240];
+
+  new Chart(document.getElementById("featureImportance"), {
+    type: "bar",
+    data: {
+      labels: featureLabels,
+      datasets: [{
+        label: "Importance",
+        data: featureScores,
+        backgroundColor: "#2980b9"
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: { display: false }
+      },
+      scales: {
+        x: { beginAtZero: true }
+      }
+    }
+  });
+</script>
+
 </body>
 </html>
